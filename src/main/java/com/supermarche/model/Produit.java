@@ -6,18 +6,15 @@ public class Produit {
     private String description;
     private double prix;
     private int stock;
-    private Categorie categorie; // Relation avec la catégorie
 
-    // Constructeurs
     public Produit() {}
 
-    public Produit(int idProduit, String nom, String description, double prix, int stock, Categorie categorie) {
+    public Produit(int idProduit, String nom, String description, double prix, int stock) {
         this.idProduit = idProduit;
         this.nom = nom;
         this.description = description;
         this.prix = prix;
         this.stock = stock;
-        this.categorie = categorie;
     }
 
     // Getters et Setters
@@ -61,14 +58,6 @@ public class Produit {
         this.stock = stock;
     }
 
-    public Categorie getCategorie() {
-        return categorie;
-    }
-
-    public void setCategorie(Categorie categorie) {
-        this.categorie = categorie;
-    }
-
     // Méthode toString pour le débogage
     @Override
     public String toString() {
@@ -78,7 +67,6 @@ public class Produit {
                 ", description='" + description + '\'' +
                 ", prix=" + prix +
                 ", stock=" + stock +
-                ", categorie=" + (categorie != null ? categorie.getNom() : "Aucune") +
                 '}';
     }
 }

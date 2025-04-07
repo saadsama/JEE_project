@@ -1,10 +1,19 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-    <title><%= request.getAttribute("title") != null ? request.getAttribute("title") : "Mon Application" %></title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
-</head>
-<body>
+<header class="header">
+        <div class="header-container">
+            <div class="header-brand">
+                <i class="fas fa-shopping-cart header-logo"></i>
+                <h1 class="header-title">SuperMarché</h1>
+            </div>
+            <div class="header-tools">
+                <a href="#" class="header-tool" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="#" class="header-tool" title="Paramètres">
+                    <i class="fas fa-cog"></i>
+                </a>
+                <a href="#" class="header-tool" title="Profil">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+    </header>

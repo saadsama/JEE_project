@@ -1,9 +1,7 @@
 package controller;
 
 import com.supermarche.dao.ProduitDAO;
-import com.supermarche.dao.CategorieDAO;
 import com.supermarche.model.Produit;
-import com.supermarche.model.Categorie;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,12 +16,10 @@ import java.util.List;
 public class ProduitServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private ProduitDAO produitDAO;
-    private CategorieDAO categorieDAO;
 
     @Override
     public void init() {
         produitDAO = new ProduitDAO();
-        categorieDAO = new CategorieDAO();
     }
 
     @Override
@@ -84,17 +80,13 @@ public class ProduitServlet extends HttpServlet {
     }
 
     private void afficherFormulaireAjout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Categorie> categories = categorieDAO.listerCategories();
-        request.setAttribute("categories", categories);
         request.getRequestDispatcher("/WEB-INF/produit_crud/form.jsp").forward(request, response);
     }
 
     private void afficherFormulaireEdition(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int idProduit = Integer.parseInt(request.getParameter("id"));
         Produit produit = produitDAO.obtenirProduitParId(idProduit);
-        List<Categorie> categories = categorieDAO.listerCategories();
         request.setAttribute("produit", produit);
-        request.setAttribute("categories", categories);
         request.getRequestDispatcher("/WEB-INF/produit_crud/form.jsp").forward(request, response);
     }
 
@@ -103,10 +95,8 @@ public class ProduitServlet extends HttpServlet {
         String description = request.getParameter("description");
         double prix = Double.parseDouble(request.getParameter("prix"));
         int stock = Integer.parseInt(request.getParameter("stock"));
-        int idCategorie = Integer.parseInt(request.getParameter("idCategorie"));
 
-        Categorie categorie = categorieDAO.obtenirCategorieParId(idCategorie);
-        Produit produit = new Produit(0, nom, description, prix, stock, categorie);
+        Produit produit = new Produit(0, nom, description, prix, stock);
         produitDAO.ajouterProduit(produit);
 
         response.sendRedirect("ProduitServlet");
@@ -118,10 +108,8 @@ public class ProduitServlet extends HttpServlet {
         String description = request.getParameter("description");
         double prix = Double.parseDouble(request.getParameter("prix"));
         int stock = Integer.parseInt(request.getParameter("stock"));
-        int idCategorie = Integer.parseInt(request.getParameter("idCategorie"));
 
-        Categorie categorie = categorieDAO.obtenirCategorieParId(idCategorie);
-        Produit produit = new Produit(idProduit, nom, description, prix, stock, categorie);
+        Produit produit = new Produit(idProduit, nom, description, prix, stock);
         produitDAO.mettreAJourProduit(produit);
 
         response.sendRedirect("ProduitServlet");
@@ -133,4 +121,3 @@ public class ProduitServlet extends HttpServlet {
         response.sendRedirect("ProduitServlet");
     }
 }
-

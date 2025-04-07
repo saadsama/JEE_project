@@ -1,29 +1,85 @@
-@charset "UTF-8";
-body {
-    font-family: Arial, sans-serif;
+:root {
+    --header-bg: #2c3e50;
+    --header-gradient: linear-gradient(135deg, #2c3e50, #3498db);
+    --text-color: #ffffff;
+    --accent-color: #e74c3c;
+    --shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Reset de base */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    max-height:100hv;
 }
 
-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    background-color: #333;
-    overflow: hidden;
+/* Style du header */
+.header {
+    background: var(--header-gradient);
+    padding: 1.5rem 2rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-nav ul li {
-    display: inline;
+/* Container du logo et titre */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.header-nav {
+	display: flex ;
+	border-left: 50px ;
+	backhground-shadow: #135789;
+	box-shadow: var(--shadow);
+	max-height: 100hv;
+	
+	
+	
 }
 
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    padding: 14px 20px;
-    display: inline-block;
+.header-logo {
+    font-size: 2rem;
+    color: var(--text-color);
 }
 
-nav ul li a:hover {
-    background-color: #575757;
+.header-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+
+/* Style des icônes outils */
+.header-tool {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.header-tool:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .header-title {
+        font-size: 1.5rem;
+    }
+
+    .header-tools {
+        gap: 1rem;
+    }
 }

@@ -3,63 +3,67 @@ package com.supermarche.dao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class DatabaseConnection {
-
-    // Instance unique du Singleton
-    private static DatabaseConnection instance;
-
-    // Connexion JDBC
-    private Connection connection;
-
-    // Informations de connexion
     private static final String URL = "jdbc:mysql://localhost:3306/projet_fed_s3";
     private static final String USER = "root";
     private static final String PASSWORD = "";
-    // Constructeur privé pour empêcher l'instanciation directe
-    private DatabaseConnection() {
+    
+    private static final int MAX_CONNECTIONS = 10;
+    private static ConcurrentLinkedQueue<Connection> connectionPool = new ConcurrentLinkedQueue<>();
+
+    static {
         try {
-            // Charger le driver JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Établir la connexion
-            this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Connexion établie avec succès !");
+            // Préchauffer le pool de connexions
+            for (int i = 0; i < MAX_CONNECTIONS; i++) {
+                connectionPool.offer(createNewConnection());
+            }
         } catch (ClassNotFoundException e) {
-            System.err.println("Driver JDBC introuvable !");
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            System.err.println("Erreur lors de la connexion à la base de données !");
-            throw new RuntimeException(e);
+            throw new RuntimeException("Driver JDBC introuvable", e);
         }
     }
 
-    // Méthode publique pour obtenir l'instance unique du Singleton
-    public static DatabaseConnection getInstance() {
-        if (instance == null) {
-            synchronized (DatabaseConnection.class) { // Assure un accès thread-safe
-                if (instance == null) {
-                    instance = new DatabaseConnection();
-                }
-            }
-        }
-        return instance;
-    }
-
-    // Retourne l'objet Connection pour les opérations JDBC
-    public Connection getConnection() {
-        return connection;
-    }
-
-    // Méthode pour fermer la connexion (optionnel)
-    public void closeConnection() {
+    private static Connection createNewConnection() throws RuntimeException {
         try {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-                System.out.println("Connexion fermée avec succès !");
-            }
+            return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la fermeture de la connexion !");
-            throw new RuntimeException(e);
+            throw new RuntimeException("Erreur de connexion à la base", e);
         }
+    }
+
+    public static Connection getConnection() throws SQLException {
+        Connection conn = connectionPool.poll();
+        if (conn == null || conn.isClosed()) {
+            conn = createNewConnection();
+        }
+        return conn;
+    }
+
+    public static void returnConnection(Connection conn) {
+        if (conn != null) {
+            try {
+                if (!conn.isClosed()) {
+                    connectionPool.offer(conn);
+                }
+            } catch (SQLException e) {
+                // Log error
+            }
+        }
+    }
+
+    // Fermeture de toutes les connexions du pool
+    public static void closeAllConnections() {
+        for (Connection conn : connectionPool) {
+            try {
+                if (!conn.isClosed()) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                // Log error
+            }
+        }
+        connectionPool.clear();
     }
 }
