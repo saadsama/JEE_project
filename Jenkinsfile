@@ -51,7 +51,7 @@ pipeline {
                 script {
                     def testLog = sh(script: 'find target/surefire-reports -name "*.txt" | xargs cat || echo "No test logs found"', returnStdout: true)
                     sh """
-                        curl -X POST http://logstash:5000 \
+                        curl -X POST http://host.docker.internal:500\
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Tests completed successfully","stage":"test","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"test"}'
                     """
