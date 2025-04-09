@@ -16,7 +16,7 @@ pipeline {
                 script {
 
                     sh """
-                        curl -X POST http://172.19.0.5:5000 \
+                        curl -X POST http://logstash:5000 \
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Code checkout complete","stage":"checkout","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"checkout"}'
                     """
@@ -34,7 +34,7 @@ pipeline {
                 script {
                     def buildLog = sh(script: 'find . -name "*.log" | xargs cat || echo "No log files found"', returnStdout: true)
                     sh """
-                        curl -X POST http://172.19.0.5:5000 \
+                        curl -X POST http://logstash:5000 \
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Build completed successfully","stage":"build","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"build"}'
                     """
@@ -51,7 +51,7 @@ pipeline {
                 script {
                     def testLog = sh(script: 'find target/surefire-reports -name "*.txt" | xargs cat || echo "No test logs found"', returnStdout: true)
                     sh """
-                        curl -X POST http://172.19.0.5:500\
+                        curl -X POST http://logstash:5000\
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Tests completed successfully","stage":"test","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"test"}'
                     """
@@ -72,7 +72,7 @@ pipeline {
                 // Log packaging event
                 script {
                     sh """
-                        curl -X POST http://172.19.0.5:5000 \
+                        curl -X POST http://logstash:5000 \
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Application packaged successfully","stage":"package","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"package"}'
                     """
@@ -93,7 +93,7 @@ pipeline {
                 script {
                     def deployLog = sh(script: 'cat deploy.log', returnStdout: true)
                     sh """
-                        curl -X POST http://172.19.0.5:5000 \
+                        curl -X POST http://logstash:5000 \
                         -H 'Content-Type: application/json' \
                         -d '{"message":"Application deployed successfully","stage":"deploy","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"deploy","deploy_log":"${deployLog.replaceAll('"', '\\\\"')}"}'
                     """
@@ -109,7 +109,7 @@ pipeline {
             // Log pipeline completion
             script {
                 sh """
-                    curl -X POST http://172.19.0.5:5000 \
+                    curl -X POST http://logstash:5000 \
                     -H 'Content-Type: application/json' \
                     -d '{"message":"Pipeline completed with status: ${currentBuild.result}","stage":"post","job_name":"${env.JOB_NAME}","build_number":"${env.BUILD_NUMBER}","log_type":"pipeline"}'
                 """
